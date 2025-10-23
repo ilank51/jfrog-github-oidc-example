@@ -79,14 +79,14 @@ jobs:
       - name: NPM publish
         run: jf npm publish --build-name ${{ env.BUILD_NAME }} --build-number ${{ env.BUILD_NUMBER }}
 
-      - name: Add deployed-by and github-actor properties
+      - name: Add github-commiter and github-actor properties
         run: |
           PACKAGE_NAME=$(jq -r .name package.json)
           PACKAGE_VERSION=$(jq -r .version package.json)
           # NPM repo format: <repo>/<package-name>/-/<package-name>-<version>.tgz
           ARTIFACT_PATH="$PLATFORM_REPO/$PACKAGE_NAME/-/$PACKAGE_NAME-$PACKAGE_VERSION.tgz"
           echo "Artifact Path: $ARTIFACT_PATH"
-          jf rt sp "$ARTIFACT_PATH" "deployed-by=${COMMITTER};github-actor=${GITHUB_ACTOR}"
+          jf rt sp "$ARTIFACT_PATH" "github-commiter=${COMMITTER};github-actor=${GITHUB_ACTOR}"
 
       - name: Publish Build Info to Artifactory
         run: jf rt build-publish ${{ env.BUILD_NAME }} ${{ env.BUILD_NUMBER }}
