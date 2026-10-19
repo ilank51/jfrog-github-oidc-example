@@ -7,11 +7,11 @@ permissions:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       OIDC_TOKEN_PATH: ${{ secrets.OIDC_TOKEN_PATH }}
       OIDC_AUDIENCE: 'jfrog-github'         # must match your JFrog OIDC audience
-      OIDC_PROVIDER: 'jeremyl-github'         # must match the provider configured in JFrog
+      OIDC_PROVIDER: 'gh-oidc-lab'         # must match the provider configured in JFrog
       JF_URL: ${{ secrets.CLOUD_JF_URL }}   # GitHub Actions secret for your JFrog base URL
       JF_REPO: 'jl-ci-releases'             # your Artifactory repo key
       TOKEN_PAYLOAD_PATH: ${{ secrets.ACCESS_TOKEN_PAYLOAD_PATH }}
@@ -39,7 +39,7 @@ jobs:
             | cut -d '.' -f2 \
             | tr '_-' '/+' \
             | awk '{ l=length($0)%4; if (l>0) print $0 substr("====",1,4-l); else print $0; }' \
-            | base64 -D \
+            | base64 -d \
             | jq .)
 
           echo "Decoded OIDC claims:"
@@ -69,7 +69,7 @@ jobs:
           fi
 
           # --- Decode JWT payload ---
-          decode_base64url() { echo "$1" | tr '_-' '/+' | awk '{l=length($0)%4; if(l>0) print $0 substr("====",1,4-l); else print $0}' | base64 -D 2>/dev/null; }
+          decode_base64url() { echo "$1" | tr '_-' '/+' | awk '{l=length($0)%4; if(l>0) print $0 substr("====",1,4-l); else print $0}' | base64 -d 2>/dev/null; }
           PAYLOAD=$(echo "$ACCESS_TOKEN" | cut -d '.' -f2)
           DECODED_PAYLOAD=$(decode_base64url "$PAYLOAD" | jq .)
 
