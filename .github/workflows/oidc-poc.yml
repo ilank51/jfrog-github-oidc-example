@@ -58,6 +58,8 @@ jobs:
               \"provider_name\": \"$OIDC_PROVIDER\"
             }")
 
+          echo "RAW: $RESPONSE" | head -c 500
+
           ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token // empty')
 
           if [ -z "$ACCESS_TOKEN" ]; then
